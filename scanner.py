@@ -164,10 +164,18 @@ class APIScanner:
             for keyword, locations in self.custom_keywords_results.items():
                 await file.write(f"{keyword}: {len(locations)} occurrences\nLocations: {', '.join(locations)}\n\n")
 
+    async def display_status(self, task, start_time, total_items, completed_items):
+        elapsed_time = time.time() - start_time
+        remaining_items = total_items - completed_items
+        estimated_time_left = (elapsed_time / completed_items) * remaining_items if completed_items else 0
+        print(f"Task: {task} | Completed: {completed_items}/{total_items} | Elapsed Time: {elapsed_time:.2f}s | Estimated Time Left: {estimated_time_left:.2f}s")
+
     async def scan_backwards(self, session):
         print("Starting backward scan to detect changing data...")
         changes_found = False
-        for url in self.discovered_urls:
+        start_time = time.time()
+        total_urls = len(self.discovered_urls)
+        for i, url in enumerate(self.discovered_urls):
             if url not in self.visited_urls:
                 html, final_url = await self.fetch(session, url)
                 if html:
@@ -177,6 +185,7 @@ class APIScanner:
                     if new_snapshot:
                         self.changing_data.append({"source": final_url, "data": new_snapshot})
                         changes_found = True
+            await self.display_status("Backward Scan", start_time, total_urls, i + 1)
         return changes_found
 
     async def download_file(self, session, url):
@@ -214,12 +223,15 @@ class APIScanner:
             return
 
         urls = await self.parse_html(html, final_url)
-        for discovered_url in urls:
+        start_time = time.time()
+        total_urls = len(urls)
+        for i, discovered_url in enumerate(urls):
             if discovered_url not in self.discovered_urls:
                 self.discovered_urls.add(discovered_url)
                 await self.crawl(discovered_url, session, depth + 1)
                 if self.download_files:
                     await self.download_file(session, discovered_url)
+            await self.display_status("Crawl", start_time, total_urls, i + 1)
 
     async def parse_endpoint_objects(self, url, session):
         if url in self.visited_urls:
@@ -241,9 +253,11 @@ class APIScanner:
             current_urls = list(self.discovered_urls - self.visited_urls)
             if not current_urls:
                 break
-
-            for url in current_urls:
+            start_time = time.time()
+            total_urls = len(current_urls)
+            for i, url in enumerate(current_urls):
                 await self.parse_endpoint_objects(url, session)
+                await self.display_status("Enumerate Objects", start_time, total_urls, i + 1)
 
     async def scan(self):
         async with aiohttp.ClientSession(headers={"User-Agent": "APIScanner/1.0"}) as session:
