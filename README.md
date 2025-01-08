@@ -1,64 +1,97 @@
 # API Endpoint Scanner
 
-A Python-based tool to recursively scan a given URL for all associated endpoints, including links, assets, and API endpoints embedded in HTML and JavaScript files.
+The **API Endpoint Scanner** is a robust Python-based tool designed to crawl, analyze, and scrape information from websites. It recursively scans for URLs, objects, and files, providing insights into keyword usage, changing data, and downloadable resources.
 
 ## Features
 
-- **Concurrency**: Uses asynchronous requests for faster scanning.
-- **Recursive Crawling**: Scans links and endpoints up to a specified depth.
-- **JavaScript Analysis**: Extracts API endpoints from JavaScript files.
-- **Rate Limiting**: Adjustable delay between requests to prevent being blocked.
-- **Output**: Saves discovered URLs to a JSON file.
-- **Regex Matching**: Finds hidden URLs embedded in the page source.
+- **URL Scanning**: Discover and list all unique URLs on the target website.
+- **Object Parsing**: Extract and store HTML objects, attributes, and content.
+- **File Downloading**: Download images, JavaScript files, and other resources sorted by type.
+- **Keyword Analysis**:
+  - Automatic keyword frequency counting.
+  - Custom keyword matching from `custom_keywords.txt`.
+  - Saves keyword occurrences and locations.
+- **Changing Data Detection**: Detects and logs changes found during backward scans.
+- **Offline Resilience**: Pauses operations when offline and resumes once connectivity is restored.
+- **Comprehensive Logging**:
+  - Denied URLs
+  - Errors
+  - Changing data
 
-## Requirements
+## Setup
 
-- Python 3.7+
-- Install dependencies:
-  ```bash
-  pip install aiohttp beautifulsoup4 aiofiles
-  ```
+### Prerequisites
+- Python 3.8+
+- Install the required Python packages:
+
+```bash
+pip install aiohttp beautifulsoup4 aiofiles
+```
+
+### Project Structure
+```
+project/
+│
+├── results/                # Output directory
+│   ├── downloads/          # Downloaded files categorized by type
+│   ├── output.json         # List of all discovered URLs
+│   ├── objects.json        # Parsed HTML objects
+│   ├── keywords.txt        # Auto-generated keyword frequencies
+│   ├── custom_keywords.txt # User-defined keywords for searching
+│   ├── denied_urls.txt     # List of denied or restricted URLs
+│   ├── errors.txt          # Logged errors during scanning
+│   ├── changing_data.txt   # Detected changing data
+│   ├── keyword_results.txt # Custom keyword results with occurrences
+│
+├── scanner.py              # Main script
+└── README.md               # Documentation
+```
 
 ## Usage
 
-1. **Clone the Repository**:
+1. **Clone the Repository**
    ```bash
-   git clone <repository-url>
-   cd api-endpoint-scanner
+   git clone <repository_url>
+   cd <repository_directory>
    ```
 
-2. **Edit Configuration**:
-   - Open `main.py` and set the `base_url` to the target URL.
-   - Optional: Adjust `rate_limit` and `max_depth` as needed.
-
-3. **Run the Script**:
+2. **Run the Script**
+   Execute the script with:
    ```bash
-   python main.py
+   python scanner.py
    ```
 
-4. **View Results**:
-   - The discovered URLs will be saved to `discovered_urls.json` in the project directory.
+3. **Enter the Target URL**
+   The script prompts for a URL to scan, e.g., `https://example.com`.
 
-## Configuration Options
+4. **Enable Features**
+   Respond to the following prompts to enable/disable specific features:
+   - `Scan for URLs? (yes/no):`
+   - `Scan for Objects? (yes/no):`
+   - `Download Files? (yes/no):`
 
-- `base_url`: The starting URL to scan.
-- `output_file`: File where discovered URLs are saved (default: `discovered_urls.json`).
-- `rate_limit`: Delay between requests in seconds (default: `0.5`).
-- `max_depth`: Maximum depth for recursive crawling (default: `3`).
+## Custom Keyword Search
 
-## Example Output
+To use the custom keyword feature:
+1. Add your desired keywords to `custom_keywords.txt`, one per line.
+2. The script will log their occurrences and locations in `keyword_results.txt`.
 
-The `discovered_urls.json` file will contain:
-
-```json
-[
-    "https://example.com/endpoint1",
-    "https://example.com/endpoint2",
-    "https://example.com/assets/script.js"
-]
+Example `custom_keywords.txt`:
+```
+login
+api
+error
 ```
 
-## Important Notes
+## Output Files
+- **`output.json`**: Contains all unique URLs discovered during the scan.
+- **`objects.json`**: Lists all HTML objects and their details.
+- **`changing_data.txt`**: Logs any changing data with the sources.
+- **`keyword_results.txt`**: Includes custom keyword occurrences and their sources.
+- **`errors.txt`**: Contains error logs for troubleshooting.
+- **`denied_urls.txt`**: Lists URLs that were restricted or denied access.
 
-- Use this tool responsibly. Ensure you have permission to scan the target site.
-- The tool respects ethical guidelines and is not intended for malicious use.
+## Additional Notes
+- Ensure stable internet connectivity for uninterrupted scans.
+- If interrupted, the script resumes automatically when connectivity is restored.
+- Results are saved incrementally to prevent data loss.
