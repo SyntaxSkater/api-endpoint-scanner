@@ -94,7 +94,7 @@ class APIScanner:
         print(f"Scanning completed in {time.time() - start_time:.2f} seconds.")
 
 if __name__ == "__main__":
-    base_url = input("What URL would you like to scan?: ")  # Replace with the target URL
+    base_url = "https://" + input("What URL would you like to scan? Https://")  # Replace with the target URL
     output_file = "discovered_urls.json"
     rate_limit = 0.5  # Adjust rate limit (seconds between requests)
     max_depth = 3  # Set maximum crawl depth
