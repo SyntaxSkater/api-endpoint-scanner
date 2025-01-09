@@ -19,6 +19,7 @@ class APIScanner:
         self.keywords_file = os.path.join(results_dir, keywords_file)
         self.denied_urls_file = os.path.join(results_dir, denied_urls_file)
         self.errors_file = os.path.join(results_dir, errors_file)
+        self.changing_data = {}
         self.changing_data_file = os.path.join(results_dir, changing_data_file)
         self.custom_keywords_file = os.path.join(results_dir, custom_keywords_file)
         self.keyword_results_file = os.path.join(results_dir, "keyword_results.txt")
